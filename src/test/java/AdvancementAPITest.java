@@ -1,11 +1,12 @@
 import io.chazza.advancementapi.AdvancementAPI;
-import io.chazza.advancementapi.Condition;
 import io.chazza.advancementapi.FrameType;
 import io.chazza.advancementapi.Trigger;
+import io.chazza.advancementapi.conditions.ConsumeItemCondition;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -43,15 +44,17 @@ public class AdvancementAPITest {
     @Test
     public void createAndSave() {
 
-
-        AdvancementAPI parent = AdvancementAPI.builder(new NamespacedKey("test", "my/firststeps"))
+        ConsumeItemCondition condition = new ConsumeItemCondition();
+        condition.stack(new ItemStack(Material.BREAD));
+        condition.name("item");
+        AdvancementAPI parent = AdvancementAPI.builder(new NamespacedKey("plugin", "my/firststeps"))
                 .title("First Steps")
                 .description("Starting")
                 .icon("minecraft:wood_sword")
                 .trigger(
                         Trigger.builder(
                                 Trigger.TriggerType.CONSUME_ITEM, "test")
-                                .condition(Condition.builder("potion", new ItemStack(Material.BREAD, 1))))
+                                .condition(condition))
                 .hidden(false)
                 .toast(false)
                 .background("minecraft:textures/gui/advancements/backgrounds/stone.png")
@@ -64,7 +67,7 @@ public class AdvancementAPITest {
         TextComponent textComponent = new TextComponent("Addiction!");
         textComponent.setBold(true);
         textComponent.setColor(ChatColor.GOLD);
-
+        condition.stack(new ItemStack(Material.APPLE));
         AdvancementAPI advancementAPI = AdvancementAPI.builder(new NamespacedKey("test", "my/addiction"))
                 .title(textComponent) // the TextComponent define above
                 .description("Eat an Apple") // you can also use a normal String instead of the TextComponent
@@ -72,7 +75,7 @@ public class AdvancementAPITest {
                 .trigger(
                         Trigger.builder(
                                 Trigger.TriggerType.CONSUME_ITEM, "test") // triggers when consuming an item
-                                .condition(Condition.builder("potion", new ItemStack(Material.APPLE, 1)))) //1 x apple
+                                .condition(condition)) //1 x apple
                 .hidden(true) // Advancement is hidden before completed
                 .toast(true) // should send a Toast Message -> popup right upper corner
                 .background("minecraft:textures/gui/advancements/backgrounds/stone.png")

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.chazza.advancementapi.Trigger;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
@@ -118,7 +119,7 @@ public class AdvancementAPI {
 
         for (Trigger.TriggerBuilder triggerBuilder : getTriggers()) {
             Trigger trigger = triggerBuilder.build();
-            criteria.add(trigger.name, trigger.toJsonObject());
+            criteria.add(trigger.getName(), trigger.toJsonObject());
         }
 
         json.add("criteria", criteria);
@@ -173,14 +174,14 @@ public class AdvancementAPI {
     }
 
     @SuppressWarnings("deprecation")
-    public AdvancementAPI add() {
+    public boolean add() {
         try {
             Bukkit.getUnsafe().loadAdvancement(id, getJSON());
             Bukkit.getLogger().info("Successfully registered advancement.");
         } catch (IllegalArgumentException e) {
-            Bukkit.getLogger().info("Error registering advancement. It seems to already exist!");
+            return false;
         }
-        return this;
+        return true;
     }
 
     public AdvancementAPI grant(Player... players) {
@@ -365,14 +366,14 @@ public class AdvancementAPI {
 
         public AdvancementAPIBuilder trigger(Trigger.TriggerBuilder trigger) {
             if (this.triggers == null)
-                this.triggers = new ArrayList<Trigger.TriggerBuilder>();
+                this.triggers = new ArrayList<>();
             this.triggers.add(trigger);
             return this;
         }
 
         public AdvancementAPIBuilder triggers(Collection<? extends Trigger.TriggerBuilder> triggers) {
             if (this.triggers == null)
-                this.triggers = new ArrayList<Trigger.TriggerBuilder>();
+                this.triggers = new ArrayList<>();
             this.triggers.addAll(triggers);
             return this;
         }
@@ -388,13 +389,13 @@ public class AdvancementAPI {
             Set<Trigger.TriggerBuilder> triggers;
             switch (this.triggers == null ? 0 : this.triggers.size()) {
                 case 0:
-                    triggers = java.util.Collections.singleton(Trigger.builder(Trigger.TriggerType.IMPOSSIBLE, "default"));    
+                    triggers = java.util.Collections.singleton(Trigger.builder(Trigger.TriggerType.IMPOSSIBLE, "default"));
                     break;
                 case 1:
                     triggers = java.util.Collections.singleton(this.triggers.get(0));
                     break;
                 default:
-                    triggers = new java.util.LinkedHashSet<Trigger.TriggerBuilder>(this.triggers.size() < 1073741824 ? 1 + this.triggers.size() + (this.triggers.size() - 3) / 3 : Integer.MAX_VALUE);
+                    triggers = new java.util.LinkedHashSet<>(this.triggers.size() < 1073741824 ? 1 + this.triggers.size() + (this.triggers.size() - 3) / 3 : Integer.MAX_VALUE);
                     triggers.addAll(this.triggers);
                     triggers = java.util.Collections.unmodifiableSet(triggers);
             }
