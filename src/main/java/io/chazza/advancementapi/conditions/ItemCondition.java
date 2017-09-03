@@ -4,17 +4,18 @@ import com.google.gson.JsonObject;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @author Hannes
+ * @author SirYwell
  */
-public class ConsumeItemCondition extends Condition<ConsumeItemCondition> {
+public class ItemCondition extends Condition<ItemCondition> {
 
     private ItemStack stack;
 
-    public ConsumeItemCondition() {
+    public ItemCondition() {
         setT(this);
+        name("item");
     }
 
-    public ConsumeItemCondition stack(ItemStack stack) {
+    public ItemCondition stack(ItemStack stack) {
         this.stack = stack;
         return set(stack);
     }

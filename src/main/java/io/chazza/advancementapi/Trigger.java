@@ -34,7 +34,11 @@ public class Trigger {
 
         final JsonObject advConditions = new JsonObject();
         triggerObj.addProperty("trigger", "minecraft:" + this.type.toString().toLowerCase());
-        this.conditions.forEach(condition -> advConditions.add(condition.getName(), condition.getSet()));
+        this.conditions.forEach(condition -> {
+            System.out.println("Name "+ condition.getName());
+            System.out.println("Set " + condition.getSet());
+            advConditions.add(condition.getName(), condition.getSet());
+        });
         if (!this.conditions.isEmpty())
             triggerObj.add("conditions", advConditions);
 

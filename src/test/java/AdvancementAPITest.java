@@ -1,12 +1,17 @@
 import io.chazza.advancementapi.AdvancementAPI;
 import io.chazza.advancementapi.FrameType;
 import io.chazza.advancementapi.Trigger;
-import io.chazza.advancementapi.conditions.ConsumeItemCondition;
+import io.chazza.advancementapi.conditionUtils.LazyLocation;
+import io.chazza.advancementapi.conditionUtils.MaxMinValue;
+import io.chazza.advancementapi.conditionUtils.Position;
+import io.chazza.advancementapi.conditionUtils.wrappers.EntityWrapper;
+import io.chazza.advancementapi.conditions.BredAnimalsCondition;
+import io.chazza.advancementapi.conditions.ItemCondition;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,7 +34,6 @@ public class AdvancementAPITest {
     public void setUp() {
         World world = mock(World.class);
 
-
         Mockito.when(world.getWorldFolder()).thenReturn(worldFile);
 
         Server server = mock(Server.class);
@@ -43,17 +47,19 @@ public class AdvancementAPITest {
 
     @Test
     public void createAndSave() {
-
-        ConsumeItemCondition condition = new ConsumeItemCondition();
-        condition.stack(new ItemStack(Material.BREAD));
-        condition.name("item");
+        LazyLocation location = new LazyLocation();
+        MaxMinValue xAndZ = new MaxMinValue(-20, 20);
+        MaxMinValue y = new MaxMinValue(0, 265);
+        location.setPosition(new Position(xAndZ, y, xAndZ));
+        BredAnimalsCondition condition = new BredAnimalsCondition("child");
+        condition.entity(new EntityWrapper(EntityType.COW, location));
         AdvancementAPI parent = AdvancementAPI.builder(new NamespacedKey("plugin", "my/firststeps"))
                 .title("First Steps")
                 .description("Starting")
-                .icon("minecraft:wood_sword")
+                .icon("minecraft:wooden_sword")
                 .trigger(
                         Trigger.builder(
-                                Trigger.TriggerType.CONSUME_ITEM, "test")
+                                Trigger.TriggerType.BRED_ANIMALS, "test")
                                 .condition(condition))
                 .hidden(false)
                 .toast(false)
@@ -67,15 +73,17 @@ public class AdvancementAPITest {
         TextComponent textComponent = new TextComponent("Addiction!");
         textComponent.setBold(true);
         textComponent.setColor(ChatColor.GOLD);
-        condition.stack(new ItemStack(Material.APPLE));
-        AdvancementAPI advancementAPI = AdvancementAPI.builder(new NamespacedKey("test", "my/addiction"))
+        ItemCondition condition1 = new ItemCondition();
+        condition1.stack(new ItemStack(Material.APPLE));
+        condition1.name("item");
+        AdvancementAPI advancementAPI = AdvancementAPI.builder(new NamespacedKey("plugin", "my/addiction"))
                 .title(textComponent) // the TextComponent define above
                 .description("Eat an Apple") // you can also use a normal String instead of the TextComponent
                 .icon("minecraft:golden_apple")
                 .trigger(
                         Trigger.builder(
                                 Trigger.TriggerType.CONSUME_ITEM, "test") // triggers when consuming an item
-                                .condition(condition)) //1 x apple
+                                .condition(condition1)) //1 x apple
                 .hidden(true) // Advancement is hidden before completed
                 .toast(true) // should send a Toast Message -> popup right upper corner
                 .background("minecraft:textures/gui/advancements/backgrounds/stone.png")

@@ -3,7 +3,7 @@ package io.chazza.advancementapi.conditions;
 import com.google.gson.JsonObject;
 
 /**
- * @author Hannes
+ * @author SirYwell (rewritten)
  */
 public abstract class Condition<T extends Condition<T>> {
 
@@ -33,5 +33,10 @@ public abstract class Condition<T extends Condition<T>> {
 
     public JsonObject getSet() {
         return set;
+    }
+
+    @Override
+    public String toString() {
+        return t.getClass().getCanonicalName() + "(name: " + name + ", set: " + set + ")";
     }
 }
